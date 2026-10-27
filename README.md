@@ -2,7 +2,7 @@
 
 # Screen Fish
 
-## Screen Recorder for Windows
+## Free Screen Recorder for Windows
 
 A Windows 10/11 screen recorder app for any region you draw or window you select.
 
