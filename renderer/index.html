@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob: mediastream:">
+  <title>Screen Fish</title>
+  <link rel="stylesheet" href="../node_modules/@fontsource-variable/urbanist/index.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell" id="shell">
+    <div class="card" id="card" data-state="idle">
+
+      <header class="top drag">
+        <div class="badge" id="badge"><span class="dot"></span><span class="badge-text">READY</span></div>
+        <div class="sources" id="sources">Screen</div>
+        <div class="top-actions no-drag">
+          <button class="icon-btn" id="btn-region" title="Draw a region">
+            <svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-window" title="Pick a window">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 9h17"/><circle cx="6.6" cy="7" r=".4"/><circle cx="8.6" cy="7" r=".4"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-folder" title="Open recordings folder">
+            <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-settings" title="Settings">
+            <svg viewBox="0 0 24 24"><path d="M19.08 9.84 L21.42 10.17 L21.42 13.83 L19.08 14.16 L18.53 15.47 L19.96 17.37 L17.37 19.96 L15.47 18.53 L14.16 19.08 L13.83 21.42 L10.17 21.42 L9.84 19.08 L8.53 18.53 L6.63 19.96 L4.04 17.37 L5.47 15.47 L4.92 14.16 L2.58 13.83 L2.58 10.17 L4.92 9.84 L5.47 8.53 L4.04 6.63 L6.63 4.04 L8.53 5.47 L9.84 4.92 L10.17 2.58 L13.83 2.58 L14.16 4.92 L15.47 5.47 L17.37 4.04 L19.96 6.63 L18.53 8.53Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <span class="sep"></span>
+          <button class="icon-btn" id="btn-min" title="Minimise">
+            <svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg>
+          </button>
+          <button class="icon-btn close" id="btn-close" title="Close">
+            <svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="mid">
+        <div class="elapsed drag">
+          <div class="eyebrow" id="eyebrow">ELAPSED</div>
+          <div class="time" id="time"></div>
+        </div>
+        <div class="wave"><canvas id="wave"></canvas></div>
+        <div class="controls">
+          <button class="btn-pause" id="btn-pause" title="Pause (Ctrl+Shift+P)">
+            <svg class="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg>
+            <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+            <span class="pause-label">Pause</span>
+          </button>
+          <button class="btn-main" id="btn-main">
+            <span class="main-ico"></span>
+            <span class="main-text">Record</span>
+            <kbd>Ctrl ⇧ R</kbd>
+          </button>
+        </div>
+      </main>
+
+      <footer class="bottom">
+        <span class="chip-group">
+          <button class="chip chip-link" id="f-region" title="Change what's recorded"><i class="dot c1"></i><span>No region selected</span></button>
+          <button class="chip-clear" id="f-clear" title="Dismiss region">
+            <svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>
+          </button>
+        </span>
+        <span class="chip" id="f-mic"><i class="dot c2"></i><span>Mic</span></span>
+        <span class="chip" id="f-sys"><i class="dot c3"></i><span>System audio</span></span>
+        <span class="footer-right">
+          <button class="saved" id="f-saved" title="Show in folder"></button>
+          <span class="size" id="f-size">0.0 MB</span>
+        </span>
+      </footer>
+
+      <div class="toast" id="toast"></div>
+
+      <section class="settings" id="settings">
+        <div class="set-grid">
+
+          <div class="group full">
+            <div class="eyebrow">Save to</div>
+            <div class="folder-row">
+              <div class="folder-path" id="folder-path"></div>
+              <button class="btn-ghost" id="btn-browse">Browse…</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="eyebrow">Video</div>
+
+            <label class="field">
+              <span>Encoder</span>
+              <select data-key="encoder">
+                <option value="x264">CPU (x264)</option>
+                <option value="nvenc">NVIDIA (NVENC)</option>
+                <option value="qsv">Intel (Quick Sync)</option>
+                <option value="amf">AMD (AMF)</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Quality preset</span>
+              <select data-key="preset">
+                <option value="speed">Fast (lower quality)</option>
+                <option value="balanced">Balanced</option>
+                <option value="quality">High quality</option>
+                <option value="max">Maximum quality</option>
+              </select>
+            </label>
+
+            <div class="field">
+              <span>Rate control</span>
+              <div class="seg">
+                <label><input type="radio" name="rc" data-key="rateControl" value="bitrate"><b>Bitrate</b></label>
+                <label><input type="radio" name="rc" data-key="rateControl" value="quality"><b>Constant quality</b></label>
+              </div>
+            </div>
+
+            <label class="field rc-bitrate">
+              <span>Bitrate</span>
+              <span class="unit-input"><input type="number" data-key="bitrate" data-type="number" min="500" max="100000" step="500"><em>kbps</em></span>
+            </label>
+
+            <label class="field rc-quality">
+              <span>Quality <em class="hint" id="cq-val"></em></span>
+              <input type="range" data-key="cq" data-type="number" min="10" max="40" step="1">
+            </label>
+
+            <label class="field">
+              <span>Frame rate</span>
+              <select data-key="fps" data-type="number">
+                <option value="24">24 fps</option>
+                <option value="30">30 fps</option>
+                <option value="50">50 fps</option>
+                <option value="60">60 fps</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Output size</span>
+              <select data-key="scale" data-type="number">
+                <option value="1">100% (native)</option>
+                <option value="0.75">75%</option>
+                <option value="0.5">50%</option>
+              </select>
+            </label>
+
+            <label class="field toggle">
+              <span>Capture mouse pointer</span>
+              <input type="checkbox" data-key="cursor"><i></i>
+            </label>
+          </div>
+
+          <div class="group">
+            <div class="eyebrow">Audio</div>
+
+            <label class="field toggle">
+              <span>Microphone</span>
+              <input type="checkbox" data-key="micEnabled"><i></i>
+            </label>
+
+            <label class="field">
+              <span>Input device</span>
+              <select data-key="micId" id="mic-select">
+                <option value="default">System default</option>
+              </select>
+            </label>
+
+            <label class="field toggle">
+              <span>System audio</span>
+              <input type="checkbox" data-key="systemAudio"><i></i>
+            </label>
+
+            <label class="field">
+              <span>Audio bitrate</span>
+              <select data-key="audioBitrate" data-type="number">
+                <option value="96">96 kbps</option>
+                <option value="128">128 kbps</option>
+                <option value="160">160 kbps</option>
+                <option value="192">192 kbps</option>
+                <option value="256">256 kbps</option>
+                <option value="320">320 kbps</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Audio delay</span>
+              <span class="unit-input"><input type="number" data-key="audioDelay" data-type="number" min="-2000" max="2000" step="10"><em>ms</em></span>
+            </label>
+
+            <div class="eyebrow sub">Behaviour</div>
+
+            <label class="field">
+              <span>Countdown</span>
+              <select data-key="countdown" data-type="number">
+                <option value="0">None</option>
+                <option value="3">3 seconds</option>
+                <option value="5">5 seconds</option>
+              </select>
+            </label>
+
+            <label class="field toggle">
+              <span>Always on top</span>
+              <input type="checkbox" data-key="alwaysOnTop"><i></i>
+            </label>
+
+            <label class="field toggle">
+              <span>Hide this window from recordings</span>
+              <input type="checkbox" data-key="hideFromCapture"><i></i>
+            </label>
+
+            <label class="field toggle">
+              <span>Show region outline</span>
+              <input type="checkbox" data-key="showBorder"><i></i>
+            </label>
+
+            <label class="field toggle">
+              <span>Minimise when recording starts</span>
+              <input type="checkbox" data-key="minimizeOnRecord"><i></i>
+            </label>
+
+            <div class="field">
+              <span>Dismiss region key</span>
+              <span class="key-capture">
+                <button class="key-btn" id="dismiss-key" title="Click, then press a key or combination"></button>
+                <button class="key-reset" id="dismiss-reset" title="Reset to Escape">Reset</button>
+              </span>
+            </div>
+
+            <label class="field toggle">
+              <span>Dismiss key works in any app</span>
+              <input type="checkbox" data-key="dismissGlobal"><i></i>
+            </label>
+
+            <div class="field-note" id="dismiss-note"></div>
+          </div>
+
+        </div>
+        <div class="set-foot">
+          <span>Shortcuts: <kbd>Ctrl ⇧ R</kbd> record / stop · <kbd>Ctrl ⇧ P</kbd> pause / resume</span>
+          <span class="app-version" id="app-version"></span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="audio.js"></script>
+  <script src="wave.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

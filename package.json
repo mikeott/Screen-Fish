@@ -1,0 +1,42 @@
+{
+  "name": "screen-fish",
+  "productName": "Screen Fish",
+  "version": "1.0.0",
+  "description": "Record any region or window of your screen to MP4 with microphone and system audio.",
+  "main": "main.js",
+  "author": "Michael Ott",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "@fontsource-variable/urbanist": "^5.3.0",
+    "ffmpeg-static": "^5.3.0",
+    "jquery": "^4.0.0"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "au.com.rocketapps.screenfish",
+    "productName": "Screen Fish",
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/**"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
