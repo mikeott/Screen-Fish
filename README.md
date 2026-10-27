@@ -1,4 +1,8 @@
+<img src="screenshots/screen-fish.png" alt="Screen Fish Logo" width="150">
+
 # Screen Fish
+
+## Screen Recorder for Windows
 
 A Windows 10/11 screen recorder app for any region you draw or window you select.
 
@@ -9,6 +13,10 @@ Records to MP4 (H.264 + AAC) with microphone and system audio. Both installer an
 Reliable screen capture has always been a pain point on Windows, even with many paid apps falling short. Rather than settle for another disappointing solution, I put Claude.ai to work building an app around a specific set of features I wanted.
 
 This application is built on Electron.
+
+![Screen Fish Main Interface](screenshots/main-interface.png)
+
+![Screen Fish Settings Interface](screenshots/interface-settings.png)
 
 ## Downloads
 
